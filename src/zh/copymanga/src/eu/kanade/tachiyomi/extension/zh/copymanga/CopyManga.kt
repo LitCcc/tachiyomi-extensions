@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.SharedPreferences
 import com.luhuiguo.chinese.ChineseUtils
 import com.squareup.duktape.Duktape
-import eu.kanade.tachiyomi.lib.ratelimit.SpecificHostRateLimitInterceptor
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.source.ConfigurableSource
 import eu.kanade.tachiyomi.source.model.Filter
@@ -54,8 +53,6 @@ class CopyManga : ConfigurableSource, HttpSource() {
     // val replaceToMirror2 = Regex("1767566263\\.rsc\\.cdn77\\.org")
     // val replaceToMirror = Regex("1025857477\\.rsc\\.cdn77\\.org")
 
-    private val CONNECT_PERMITS = 1
-    private val CONNECT_PERIOD = 2L
 
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
@@ -75,42 +72,7 @@ class CopyManga : ConfigurableSource, HttpSource() {
         init(null, arrayOf(trustManager), SecureRandom())
     }
 
-    private val mainSiteApiRateLimitInterceptor = SpecificHostRateLimitInterceptor(
-        baseUrl.toHttpUrlOrNull()!!,
-        CONNECT_PERMITS,
-        CONNECT_PERIOD
-    )
-
-    private val mainlandCDN1RateLimitInterceptor = SpecificHostRateLimitInterceptor(
-        mainlandCdn1Url.toHttpUrlOrNull()!!,
-        CONNECT_PERMITS,
-        CONNECT_PERIOD
-    )
-
-    private val mainlandCDN2RateLimitInterceptor = SpecificHostRateLimitInterceptor(
-        mainlandCdn2Url.toHttpUrlOrNull()!!,
-        CONNECT_PERMITS,
-        CONNECT_PERIOD
-    )
-
-    private val overseasCDN1RateLimitInterceptor = SpecificHostRateLimitInterceptor(
-        overseasCdn1Url.toHttpUrlOrNull()!!,
-        CONNECT_PERMITS,
-        CONNECT_PERIOD
-    )
-
-    private val overseasCDN2RateLimitInterceptor = SpecificHostRateLimitInterceptor(
-        overseasCdn2Url.toHttpUrlOrNull()!!,
-        CONNECT_PERMITS,
-        CONNECT_PERIOD
-    )
-
     override val client: OkHttpClient = super.client.newBuilder()
-        .addInterceptor(mainSiteApiRateLimitInterceptor)
-        .addInterceptor(mainlandCDN1RateLimitInterceptor)
-        .addInterceptor(mainlandCDN2RateLimitInterceptor)
-        .addInterceptor(overseasCDN1RateLimitInterceptor)
-        .addInterceptor(overseasCDN2RateLimitInterceptor)
         .sslSocketFactory(sslContext.socketFactory, trustManager)
         .build()
 
