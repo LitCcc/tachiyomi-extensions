@@ -11,5 +11,4 @@ apply from: "$rootDir/common.gradle"
 
 dependencies {
     implementation 'com.luhuiguo:chinese-utils:1.0'
-    implementation project(':lib-ratelimit')
 }
